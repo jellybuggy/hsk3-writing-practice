@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HSK3 书写第一部分 - 词语排序</title>
+  <link rel="stylesheet" href="part1-style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Home View -->
+    <div id="homeView">
+      <div class="header">
+        <h1>HSK3 书写第一部分</h1>
+        <p>词语排序写句子</p>
+      </div>
+      <div class="day-grid">
+        <button class="day-btn" data-day="1">Day 1<span class="count">23题</span></button>
+        <button class="day-btn" data-day="2">Day 2<span class="count">23题</span></button>
+        <button class="day-btn" data-day="3">Day 3<span class="count">23题</span></button>
+        <button class="day-btn" data-day="4">Day 4<span class="count">23题</span></button>
+        <button class="day-btn" data-day="5">Day 5<span class="count">23题</span></button>
+        <button class="day-btn" data-day="6">Day 6<span class="count">23题</span></button>
+        <button class="day-btn" data-day="7">Day 7<span class="count">22题</span></button>
+      </div>
+    </div>
+
+    <!-- Practice View -->
+    <div id="practiceView" class="hidden">
+      <div class="practice-header">
+        <button class="back-btn" id="backToDayBtn">返回</button>
+        <span class="progress" id="progressText">1 / 23</span>
+      </div>
+
+      <div class="question-card">
+        <div class="question-number" id="questionNumber">第 1 题</div>
+        <div class="question-title">请将下列词语排列成正确的句子：</div>
+
+        <!-- Available Words -->
+        <div class="words-area" id="wordsArea"></div>
+
+        <!-- Answer Area -->
+        <div class="answer-area" id="answerArea"></div>
+
+        <!-- Control Buttons -->
+        <div class="control-btns">
+          <button class="ctrl-btn undo" id="undoBtn">撤回</button>
+          <button class="ctrl-btn clear" id="clearBtn">清空</button>
+          <button class="ctrl-btn check" id="checkBtn">检查答案</button>
+          <button class="ctrl-btn next" id="nextBtn">下一题</button>
+        </div>
+
+        <!-- Result Area -->
+        <div id="resultArea"></div>
+      </div>
+
+      <button class="back-btn" id="backHomeBtn" style="display:block; margin:15px auto 0; text-align:center;">返回首页</button>
+    </div>
+
+    <!-- Score View -->
+    <div id="scoreView" class="hidden">
+      <div class="score-card">
+        <div class="score-title" id="scoreTitle">Day 1 练习完成！</div>
+        <div class="score-number" id="scoreNumber">18/23</div>
+        <div class="score-detail" id="scoreDetail">正确率 78.3%</div>
+        <button class="restart-btn" id="restartBtn">重新练习</button>
+        <a href="#" class="home-link" id="homeBtn">返回首页</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="hsk3-writing-part1-sentence-questions.js"></script>
+  <script src="part1-app.js"></script>
+</body>
+</html>
