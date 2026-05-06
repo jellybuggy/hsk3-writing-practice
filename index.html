@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HSK3 书写练习</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; color: #333; min-height: 100vh; }
+    .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; padding: 20px 0; }
+    .header h1 { font-size: 24px; color: #2c3e50; margin-bottom: 8px; }
+    .header p { color: #666; font-size: 14px; }
+    .day-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
+    .day-btn { background: white; border: 2px solid #3498db; color: #3498db; padding: 15px 5px; font-size: 16px; font-weight: bold; border-radius: 10px; cursor: pointer; }
+    .day-btn:active { background: #3498db; color: white; }
+    .day-btn .count { display: block; font-size: 11px; font-weight: normal; margin-top: 3px; }
+    .practice-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .back-btn { background: none; border: none; color: #3498db; font-size: 14px; cursor: pointer; padding: 5px; }
+    .progress { color: #666; font-size: 13px; }
+    .question-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 15px; }
+    .question-number { color: #3498db; font-size: 13px; font-weight: bold; margin-bottom: 10px; }
+    .question-sentence { font-size: 18px; line-height: 1.6; color: #2c3e50; margin-bottom: 20px; }
+    .input-area { display: flex; gap: 8px; margin-bottom: 10px; }
+    .answer-input { flex: 1; padding: 12px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; text-align: center; }
+    .check-btn { padding: 12px 20px; background: #3498db; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
+    .check-btn:disabled { background: #ccc; }
+    .result { padding: 15px; border-radius: 8px; margin-top: 10px; }
+    .result.correct { background: #d4edda; border: 1px solid #c3e6cb; }
+    .result.wrong { background: #f8d7da; border: 1px solid #f5c6cb; }
+    .result-title { font-size: 16px; font-weight: bold; margin-bottom: 8px; }
+    .result.correct .result-title { color: #155724; }
+    .result.wrong .result-title { color: #721c24; }
+    .result-detail { color: #666; font-size: 13px; line-height: 1.5; }
+    .correct-answer { font-weight: bold; color: #155724; }
+    .next-btn { display: block; width: 100%; padding: 14px; background: #27ae60; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; margin-top: 15px; }
+    .score-card { background: white; border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .score-title { font-size: 20px; color: #2c3e50; margin-bottom: 15px; }
+    .score-number { font-size: 50px; font-weight: bold; color: #3498db; margin-bottom: 8px; }
+    .score-detail { color: #666; font-size: 14px; margin-bottom: 25px; }
+    .restart-btn { padding: 14px 30px; background: #3498db; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
+    .home-btn { display: inline-block; margin-top: 15px; color: #3498db; text-decoration: none; font-size: 13px; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="homeView">
+      <div class="header">
+        <h1>HSK3 书写练习</h1>
+        <p>第二部分：根据拼音写汉字</p>
+      </div>
+      <div class="day-grid">
+        <button class="day-btn" data-day="1">Day 1<span class="count">21题</span></button>
+        <button class="day-btn" data-day="2">Day 2<span class="count">21题</span></button>
+        <button class="day-btn" data-day="3">Day 3<span class="count">21题</span></button>
+        <button class="day-btn" data-day="4">Day 4<span class="count">21题</span></button>
+        <button class="day-btn" data-day="5">Day 5<span class="count">21题</span></button>
+        <button class="day-btn" data-day="6">Day 6<span class="count">20题</span></button>
+        <button class="day-btn" data-day="7">Day 7<span class="count">20题</span></button>
+      </div>
+    </div>
+
+    <div id="practiceView" class="hidden">
+      <div class="practice-header">
+        <button class="back-btn" id="backBtn">返回</button>
+        <span class="progress" id="progressText">1 / 21</span>
+      </div>
+      <div class="question-card">
+        <div class="question-number" id="questionNumber">第 1 题</div>
+        <div class="question-sentence" id="questionSentence"></div>
+        <div class="input-area">
+          <input type="text" class="answer-input" id="answerInput" placeholder="请输入汉字" maxlength="10" autocomplete="off" autocorrect="off" autocapitalize="off">
+          <button class="check-btn" id="checkBtn">检查</button>
+        </div>
+        <div id="resultArea"></div>
+      </div>
+      <button class="next-btn hidden" id="nextBtn">下一题</button>
+    </div>
+
+    <div id="scoreView" class="hidden">
+      <div class="score-card">
+        <div class="score-title" id="scoreTitle">Day 1 练习完成！</div>
+        <div class="score-number" id="scoreNumber">18/21</div>
+        <div class="score-detail" id="scoreDetail">正确率 85.7%</div>
+        <button class="restart-btn" id="restartBtn">重新练习</button>
+        <a href="#" class="home-btn" id="homeBtn">返回首页</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var questions = [
+      { id: "H31001-76", day: 1, answer: "出", fullSentence: "医院离这儿很远，我们坐出租车去吧。", promptSentence: "医院离这儿很远，我们坐（chū）租车去吧。" },
+      { id: "H31001-77", day: 1, answer: "元", fullSentence: "一元是 10 角，一角是 10 分。", promptSentence: "一（yuán）是 10 角，一角是 10 分。" },
+      { id: "H31001-78", day: 1, answer: "叫", fullSentence: "我不认识他，你知道他姓什么、叫什么吗？", promptSentence: "我不认识他，你知道他姓什么、（jiào）什么吗？" },
+      { id: "H31001-79", day: 1, answer: "中", fullSentence: "中间穿红裙子的一定是他妹妹。", promptSentence: "（Zhōng）间穿红裙子的一定是他妹妹。" },
+      { id: "H31001-80", day: 1, answer: "米", fullSentence: "我已经饱了，不想吃米饭了。", promptSentence: "我已经饱了，不想吃（mǐ）饭了。" },
+      { id: "H31002-76", day: 1, answer: "人", fullSentence: "他一直都很关心别人。", promptSentence: "他一直都很关心别（ren）。" },
+      { id: "H31002-77", day: 1, answer: "太", fullSentence: "你的头发太长了，像草一样。", promptSentence: "你的头发（tài）长了，像草一样。" },
+      { id: "H31002-78", day: 1, answer: "个", fullSentence: "就在这条街的东边，有个眼镜店。", promptSentence: "就在这条街的东边，有（ge）眼镜店。" },
+      { id: "H31002-79", day: 1, answer: "云", fullSentence: "今天是晴天，没有云。", promptSentence: "今天是晴天，没有（yún）。" },
+      { id: "H31002-80", day: 1, answer: "文", fullSentence: "我来中国，除了学习汉语，还希望了解更多的中国文化。", promptSentence: "我来中国，除了学习汉语，还希望了解更多的中国（wén）化。" },
+      { id: "H31003-76", day: 1, answer: "月", fullSentence: "4月7号是我的生日，中午你们来我家吃饭吧。", promptSentence: "4（yuè）7号是我的生日，中午你们来我家吃饭吧。" },
+      { id: "H31003-77", day: 1, answer: "白", fullSentence: "看地图？很容易，上北、下南、左西、右东，明白了？", promptSentence: "看地图？很容易，上北、下南、左西、右东，明（bai）了？" },
+      { id: "H31003-78", day: 1, answer: "千", fullSentence: "一千万年前，动物们出现了吗？", promptSentence: "一（qiān）万年前，动物们出现了吗？" },
+      { id: "H31003-79", day: 1, answer: "心", fullSentence: "外面下雪了，你让孩子路上小心点儿。", promptSentence: "外面下雪了，你让孩子路上小（xīn）点儿。" },
+      { id: "H31003-80", day: 1, answer: "因", fullSentence: "生病了要注意休息，因为健康最重要。", promptSentence: "生病了要注意休息，（yīn）为健康最重要。" },
+      { id: "H31004-76", day: 1, answer: "手", fullSentence: "洗手间就在电梯左边。", promptSentence: "洗（shǒu）间就在电梯左边。" },
+      { id: "H31004-77", day: 1, answer: "是", fullSentence: "黑板上的这只鸟是谁画的？", promptSentence: "黑板上的这只鸟（shì）谁画的？" },
+      { id: "H31004-78", day: 1, answer: "家", fullSentence: "今晚的月亮让他想家了。", promptSentence: "今晚的月亮让他想（jiā）了。" },
+      { id: "H31004-79", day: 1, answer: "会", fullSentence: "这边太热了，我们去树下坐一会儿吧。", promptSentence: "这边太热了，我们去树下坐一（huì）儿吧。" },
+      { id: "H31004-80", day: 1, answer: "花", fullSentence: "草地上开着五颜六色的花儿。", promptSentence: "草地上开着五颜六色的（huā）儿。" },
+      { id: "H31005-76", day: 1, answer: "中", fullSentence: "老师，黑板中间的这个词是什么意思？", promptSentence: "老师，黑板（zhōng）间的这个词是什么意思？" },
+      { id: "H31005-77", day: 2, answer: "只", fullSentence: "他不喜欢猫，也不喜欢狗，但他家有 3只小鸟。", promptSentence: "他不喜欢猫，也不喜欢狗，但他家有 3（zhī）小鸟。" },
+      { id: "H31005-78", day: 2, answer: "日", fullSentence: "明天星期日，你作业写完没？还有几个题？", promptSentence: "明天星期（rì），你作业写完没？还有几个题？" },
+      { id: "H31005-79", day: 2, answer: "右", fullSentence: "不是左边，我说的是右边的那个帽子。", promptSentence: "不是左边，我说的是（yòu）边的那个帽子。" },
+      { id: "H31005-80", day: 2, answer: "分", fullSentence: "你带钱了吗？我还差 3 角 5分。", promptSentence: "你带钱了吗？我还差 3 角 5（fēn）。" },
+      { id: "H31006-76", day: 2, answer: "也", fullSentence: "相信我，面包会有的，牛奶也会有的。", promptSentence: "相信我，面包会有的，牛奶（yě）会有的。" },
+      { id: "H31006-77", day: 2, answer: "日", fullSentence: "每个国家都有自己的节日、自己的文化。", promptSentence: "每个国家都有自己的节（rì）、自己的文化。" },
+      { id: "H31006-78", day: 2, answer: "在", fullSentence: "请用铅笔把姓名写在照片后面。", promptSentence: "请用铅笔把姓名写（zài）照片后面。" },
+      { id: "H31006-79", day: 2, answer: "多", fullSentence: "要学好画画儿，第一，要老师教得好；第二，必须多练习。", promptSentence: "要学好画画儿，第一，要老师教得好；第二，必须（duō）练习。" },
+      { id: "H31006-80", day: 2, answer: "为", fullSentence: "我想请您为我写介绍信。", promptSentence: "我想请您（wèi）我写介绍信。" },
+      { id: "H31007-76", day: 2, answer: "手", fullSentence: "这是谁的手机？", promptSentence: "这是谁的（shǒu）机？" },
+      { id: "H31007-77", day: 2, answer: "元", fullSentence: "你看，这是几十年前的一元、一角和一分。", promptSentence: "你看，这是几十年前的一（yuán）、一角和一分。" },
+      { id: "H31007-78", day: 2, answer: "牛", fullSentence: "我不饿，不吃面包了，喝杯牛奶吧。", promptSentence: "我不饿，不吃面包了，喝杯（niú）奶吧。" },
+      { id: "H31007-79", day: 2, answer: "电", fullSentence: "不客气，有什么问题就给我打电话。", promptSentence: "不客气，有什么问题就给我打（diàn）话。" },
+      { id: "H31007-80", day: 2, answer: "云", fullSentence: "这个小太阳表示晴天，云表示阴天。", promptSentence: "这个小太阳表示晴天，（yún）表示阴天。" },
+      { id: "H31008-76", day: 2, answer: "几", fullSentence: "你姐姐的孩子上几年级？", promptSentence: "你姐姐的孩子上（jǐ）年级？" },
+      { id: "H31008-77", day: 2, answer: "心", fullSentence: "马小姐，谢谢关心，我不发烧了，头也不疼了。", promptSentence: "马小姐，谢谢关（xīn），我不发烧了，头也不疼了。" },
+      { id: "H31008-78", day: 2, answer: "下", fullSentence: "对不起，下午有个重要的会议，我让司机去医院接你好不好？", promptSentence: "对不起，（xià）午有个重要的会议，我让司机去医院接你好不好？" },
+      { id: "H31008-79", day: 2, answer: "大", fullSentence: "经过4个星期的练习，叔叔的普通话水平有了很大提高。", promptSentence: "经过4个星期的练习，叔叔的普通话水平有了很（dà）提高。" },
+      { id: "H31009-76", day: 2, answer: "见", fullSentence: "再见，欢迎您下次再来。", promptSentence: "再（jiàn），欢迎您下次再来。" },
+      { id: "H31009-77", day: 2, answer: "天", fullSentence: "突然就下雨了，刚才还是晴天，还有太阳。", promptSentence: "突然就下雨了，刚才还是晴（tiān），还有太阳。" },
+      { id: "H31009-79", day: 2, answer: "中", fullSentence: "为了更好地了解中国文化，他开始学习汉语，而且提高很快。", promptSentence: "为了更好地了解（zhōng）国文化，他开始学习汉语，而且提高很快。" },
+      { id: "H31009-80", day: 3, answer: "长", fullSentence: "厨房里的灯坏了多长时间了？", promptSentence: "厨房里的灯坏了多（cháng）时间了？" },
+      { id: "H31110-76", day: 3, answer: "出", fullSentence: "他出现在哪里，哪里就有笑声。", promptSentence: "他（chū）现在哪里，哪里就有笑声。" },
+      { id: "H31110-77", day: 3, answer: "太", fullSentence: "这张世界地图太旧了，再买张新的吧。", promptSentence: "这张世界地图（tài）旧了，再买张新的吧。" },
+      { id: "H31110-78", day: 3, answer: "个", fullSentence: "这个词是什么意思？这是我今天看新闻时看到的。", promptSentence: "这（ge）词是什么意思？这是我今天看新闻时看到的。" },
+      { id: "H31110-79", day: 3, answer: "你", fullSentence: "喂，我刚到电梯口，你家是在17层吧？", promptSentence: "喂，我刚到电梯口，（nǐ）家是在17层吧？" },
+      { id: "H31110-80", day: 3, answer: "后", fullSentence: "晚上 9 点后打电话很便宜，一分钟一角二分钱。", promptSentence: "晚上 9 点（hòu）打电话很便宜，一分钟一角二分钱。" },
+      { id: "H31111-76", day: 3, answer: "下", fullSentence: "再见，欢迎您下次再来。", promptSentence: "再见，欢迎您（xià）次再来。" },
+      { id: "H31111-77", day: 3, answer: "回", fullSentence: "男朋友的回答，让她特别高兴。", promptSentence: "男朋友的（huí）答，让她特别高兴。" },
+      { id: "H31111-78", day: 3, answer: "比", fullSentence: "对猫来说，小鱼比羊肉更好吃。", promptSentence: "对猫来说，小鱼（bǐ）羊肉更好吃。" },
+      { id: "H31111-79", day: 3, answer: "太", fullSentence: "你把空调打开吧，房间里太热了。", promptSentence: "你把空调打开吧，房间里（tài）热了。" },
+      { id: "H31111-80", day: 3, answer: "天", fullSentence: "爷爷，您今天买的葡萄真新鲜，非常好吃。", promptSentence: "爷爷，您今（tiān）买的葡萄真新鲜，非常好吃。" },
+      { id: "H31218-76", day: 3, answer: "大", fullSentence: "他的普通话水平最近有很大提高。", promptSentence: "他的普通话水平最近有很（dà）提高。" },
+      { id: "H31218-77", day: 3, answer: "么", fullSentence: "你好，香蕉怎么卖？", promptSentence: "你好，香蕉怎（me）卖？" },
+      { id: "H31218-78", day: 3, answer: "吃", fullSentence: "感冒了要多喝水，多吃水果。", promptSentence: "感冒了要多喝水，多（chī）水果。" },
+      { id: "H31218-79", day: 3, answer: "人", fullSentence: "对不起，我以为房间里没人。", promptSentence: "对不起，我以为房间里没（rén）。" },
+      { id: "H31218-80", day: 3, answer: "去", fullSentence: "每次经过那家商店，我都会进去为孩子买些蛋糕或者别的东西。", promptSentence: "每次经过那家商店，我都会进（qù）为孩子买些蛋糕或者别的东西。" },
+      { id: "H31219-76", day: 3, answer: "花", fullSentence: "我爸爸为了买它，花了近 60 万块钱。", promptSentence: "我爸爸为了买它，（huā）了近 60 万块钱。" },
+      { id: "H31219-77", day: 3, answer: "水", fullSentence: "经过半年多的努力学习，她的汉语水平有了很大提高。", promptSentence: "经过半年多的努力学习，她的汉语（shuǐ）平有了很大提高。" },
+      { id: "H31219-78", day: 3, answer: "也", fullSentence: "晚上 12 点也可以叫零点。", promptSentence: "晚上 12 点（yě）可以叫零点。" },
+      { id: "H31219-79", day: 3, answer: "雨", fullSentence: "太阳出来了，不用带雨伞了。", promptSentence: "太阳出来了，不用带（yǔ）伞了。" },
+      { id: "H31219-80", day: 3, answer: "个", fullSentence: "服务员，请帮我们再拿一个盘子。", promptSentence: "服务员，请帮我们再拿一（ge）盘子。" },
+      { id: "H31220-76", day: 4, answer: "工", fullSentence: "别影响爸爸工作，我们去那边玩儿。", promptSentence: "别影响爸爸（gōng）作，我们去那边玩儿。" },
+      { id: "H31220-77", day: 4, answer: "开", fullSentence: "表演一结束，她马上就离开了。", promptSentence: "表演一结束，她马上就离（kāi）了。" },
+      { id: "H31220-78", day: 4, answer: "你", fullSentence: "喂？你声音大一点儿，我听不清楚。", promptSentence: "喂？（nǐ）声音大一点儿，我听不清楚。" },
+      { id: "H31220-79", day: 4, answer: "在", fullSentence: "现在是8点45分，再有一刻钟就9点了。", promptSentence: "现（zài）是8点45分，再有一刻钟就9点了。" },
+      { id: "H31220-80", day: 4, answer: "问", fullSentence: "如果遇到什么不懂的地方，可以去问高先生。", promptSentence: "如果遇到什么不懂的地方，可以去（wèn）高先生。" },
+      { id: "H31221-76", day: 4, answer: "中", fullSentence: "春节是中国最重要的一个节日。", promptSentence: "春节是（Zhōng）国最重要的一个节日。" },
+      { id: "H31221-77", day: 4, answer: "元", fullSentence: "10 个一分是一角，10 个一角是一元。", promptSentence: "10 个一分是一角，10 个一角是一（yuán）。" },
+      { id: "H31221-78", day: 4, answer: "只", fullSentence: "从这儿到地铁站很方便，走路只需要几分钟。", promptSentence: "从这儿到地铁站很方便，走路（zhǐ）需要几分钟。" },
+      { id: "H31221-79", day: 4, answer: "门", fullSentence: "她早上出门的时候忘记关灯了。", promptSentence: "她早上出（mén）的时候忘记关灯了。" },
+      { id: "H31221-80", day: 4, answer: "好", fullSentence: "他以前没遇到过这样的事情，所以也没想出什么好办法来。", promptSentence: "他以前没遇到过这样的事情，所以也没想出什么（hǎo）办法来。" },
+      { id: "H31327-76", day: 4, answer: "文", fullSentence: "你了解中国的茶文化吗？", promptSentence: "你了解中国的茶（wén）化吗？" },
+      { id: "H31327-77", day: 4, answer: "公", fullSentence: "明天公司要举行一个重要的会议。", promptSentence: "明天（gōng）司要举行一个重要的会议。" },
+      { id: "H31327-78", day: 4, answer: "到", fullSentence: "他先对大家的到来表示欢迎。", promptSentence: "他先对大家的（dào）来表示欢迎。" },
+      { id: "H31327-79", day: 4, answer: "学", fullSentence: "学校旁边有条河，河里有很多鱼。", promptSentence: "（Xué）校旁边有条河，河里有很多鱼。" },
+      { id: "H31327-80", day: 4, answer: "和", fullSentence: "我打算去超市买点儿苹果和西瓜。", promptSentence: "我打算去超市买点儿苹果（hé）西瓜。" },
+      { id: "H31328-76", day: 4, answer: "中", fullSentence: "你觉得学中文难不难？", promptSentence: "你觉得学（Zhōng）文难不难？" },
+      { id: "H31328-77", day: 4, answer: "来", fullSentence: "春天来了，街道两边的草都绿了。", promptSentence: "春天（lái）了，街道两边的草都绿了。" },
+      { id: "H31328-78", day: 4, answer: "电", fullSentence: "再见，有事可以给我打电话或者发电子邮件。", promptSentence: "再见，有事可以给我打电话或者发（diàn）子邮件。" },
+      { id: "H31328-79", day: 4, answer: "好", fullSentence: "要想有一口好牙，就要每天认真刷牙。", promptSentence: "要想有一口（hǎo）牙，就要每天认真刷牙。" },
+      { id: "H31328-80", day: 4, answer: "知", fullSentence: "雪下得这么大，不知道会不会影响飞机起飞。", promptSentence: "雪下得这么大，不（zhī）道会不会影响飞机起飞。" },
+      { id: "H31329-76", day: 4, answer: "节", fullSentence: "这个季节的西瓜最好吃了。", promptSentence: "这个季（jié）的西瓜最好吃了。" },
+      { id: "H31329-77", day: 5, answer: "月", fullSentence: "奶奶，是不是太阳下山了，月亮就出来了？", promptSentence: "奶奶，是不是太阳下山了，（yuè）亮就出来了？" },
+      { id: "H31329-78", day: 5, answer: "找", fullSentence: "这是找您的 6 角 5 分钱，欢迎下次再来！", promptSentence: "这是（zhǎo）您的 6 角 5 分钱，欢迎下次再来！" },
+      { id: "H31329-79", day: 5, answer: "只", fullSentence: "快看，那只大熊猫爬到树上去了。", promptSentence: "快看，那（zhī）大熊猫爬到树上去了。" },
+      { id: "H31329-80", day: 5, answer: "自", fullSentence: "做选择时，最重要的是知道自己想要什么。", promptSentence: "做选择时，最重要的是知道（zì）己想要什么。" },
+      { id: "H31330-76", day: 5, answer: "会", fullSentence: "今天的作业很简单，我一会儿就做完了。", promptSentence: "今天的作业很简单，我一（huì）儿就做完了。" },
+      { id: "H31330-77", day: 5, answer: "更", fullSentence: "有时候，做对的事情比把事情做对更重要。", promptSentence: "有时候，做对的事情比把事情做对（gèng）重要。" },
+      { id: "H31330-78", day: 5, answer: "车", fullSentence: "北京西站是中国最大的火车站。", promptSentence: "北京西站是中国最大的火（chē）站。" },
+      { id: "H31330-79", day: 5, answer: "年", fullSentence: "他告诉我，他姓周，今年20岁。", promptSentence: "他告诉我，他姓周，今（nián）20岁。" },
+      { id: "H31330-80", day: 5, answer: "为", fullSentence: "姐姐今天结婚，真为她高兴。", promptSentence: "姐姐今天结婚，真（wèi）她高兴。" },
+      { id: "H31331-76", day: 5, answer: "山", fullSentence: "周末，爷爷和奶奶经常去爬山。", promptSentence: "周末，爷爷和奶奶经常去爬（shān）。" },
+      { id: "H31331-77", day: 5, answer: "牙", fullSentence: "这种饮料太甜了，喝完一定要记得刷牙。", promptSentence: "这种饮料太甜了，喝完一定要记得刷（yá）。" },
+      { id: "H31331-78", day: 5, answer: "动", fullSentence: "她从小就特别喜欢小动物。", promptSentence: "她从小就特别喜欢小（dòng）物。" },
+      { id: "H31331-79", day: 5, answer: "借", fullSentence: "我借给她的词典她没还给我。", promptSentence: "我（jiè）给她的词典她没还给我。" },
+      { id: "H31331-80", day: 5, answer: "元", fullSentence: "一共是一万两千三百二十元五角三分。", promptSentence: "一共是一万两千三百二十（yuán）五角三分。" },
+      { id: "H31335-76", day: 5, answer: "月", fullSentence: "今天阴天，看不到月亮。", promptSentence: "今天阴天，看不到（yuè）亮。" },
+      { id: "H31335-77", day: 5, answer: "白", fullSentence: "我终于明白那句话的意思了。", promptSentence: "我终于明（bai）那句话的意思了。" },
+      { id: "H31335-78", day: 5, answer: "名", fullSentence: "除了北京，你还去过哪些有名的城市？", promptSentence: "除了北京，你还去过哪些有（míng）的城市？" },
+      { id: "H31335-79", day: 5, answer: "远", fullSentence: "那家店远吗？我想下课后去买个帽子。", promptSentence: "那家店（yuǎn）吗？我想下课后去买个帽子。" },
+      { id: "H31335-80", day: 5, answer: "告", fullSentence: "人有两只耳朵、一张嘴，这其实是告诉人们要多听少说。", promptSentence: "人有两只耳朵、一张嘴，这其实是（gào）诉人们要多听少说。" },
+      { id: "H31438-76", day: 5, answer: "鸟", fullSentence: "爷爷，您看，小鸟正在树上唱歌呢。", promptSentence: "爷爷，您看，小（niǎo）正在树上唱歌呢。" },
+      { id: "H31438-77", day: 5, answer: "见", fullSentence: "蓝这个姓在中国很常见吗？", promptSentence: "蓝这个姓在中国很常（jiàn）吗？" },
+      { id: "H31438-78", day: 6, answer: "心", fullSentence: "爸爸虽然嘴上没说什么，但心里早就同意了。", promptSentence: "爸爸虽然嘴上没说什么，但（xīn）里早就同意了。" },
+      { id: "H31438-79", day: 6, answer: "万", fullSentence: "这个体育馆应该能坐三万人。", promptSentence: "这个体育馆应该能坐三（wàn）人。" },
+      { id: "H31438-80", day: 6, answer: "吃", fullSentence: "踢完足球，又渴又饿的，我们去吃饭吧？", promptSentence: "踢完足球，又渴又饿的，我们去（chī）饭吧？" },
+      { id: "H31446-76", day: 6, answer: "元", fullSentence: "这张银行卡里还有 1036元7角5分钱。", promptSentence: "这张银行卡里还有 1036（yuán）7角5分钱。" },
+      { id: "H31446-77", day: 6, answer: "下", fullSentence: "你再检查一下作业，看看有没有问题。", promptSentence: "你再检查一（xià）作业，看看有没有问题。" },
+      { id: "H31446-78", day: 6, answer: "买", fullSentence: "昨天买的香蕉不太新鲜了。", promptSentence: "昨天（mǎi）的香蕉不太新鲜了。" },
+      { id: "H31446-79", day: 6, answer: "忘", fullSentence: "再见，别忘了给我发电子邮件。", promptSentence: "再见，别（wàng）了给我发电子邮件。" },
+      { id: "H31446-80", day: 6, answer: "老", fullSentence: "参加这次会议的主要是二年级的老师。", promptSentence: "参加这次会议的主要是二年级的（lǎo）师。" },
+      { id: "H31332-76", day: 6, answer: "太", fullSentence: "太阳出来了，新的一天开始了。", promptSentence: "（Tài）阳出来了，新的一天开始了。" },
+      { id: "H31332-77", day: 6, answer: "您", fullSentence: "电影院在 8 层，您可以坐旁边那个电梯。", promptSentence: "电影院在 8 层，（nín）可以坐旁边那个电梯。" },
+      { id: "H31332-78", day: 6, answer: "里", fullSentence: "冰箱里还有饮料吗？我有点儿渴了。", promptSentence: "冰箱（li）还有饮料吗？我有点儿渴了。" },
+      { id: "H31332-79", day: 6, answer: "听", fullSentence: "我和妹妹一样，都有睡觉前听音乐的习惯。", promptSentence: "我和妹妹一样，都有睡觉前（tīng）音乐的习惯。" },
+      { id: "H31332-80", day: 6, answer: "节", fullSentence: "下一个节目就是我们班的了，大家准备下。", promptSentence: "下一个（jié）目就是我们班的了，大家准备下。" },
+      { id: "H31333-76", day: 6, answer: "女", fullSentence: "女儿疼得哭了起来。", promptSentence: "（Nǚ）儿疼得哭了起来。" },
+      { id: "H31333-77", day: 6, answer: "天", fullSentence: "这个季节草都黄了，没有夏天那么好看了。", promptSentence: "这个季节草都黄了，没有夏（tiān）那么好看了。" },
+      { id: "H31333-78", day: 6, answer: "再", fullSentence: "儿子笑着说：小狗，再见。", promptSentence: "儿子笑着说：小狗，（zài）见。" },
+      { id: "H31333-79", day: 6, answer: "生", fullSentence: "哥哥生病了，这两天妈妈一直在家里照顾他。", promptSentence: "哥哥（shēng）病了，这两天妈妈一直在家里照顾他。" },
+      { id: "H31333-80", day: 6, answer: "把", fullSentence: "洗手间你找过了吗？上次你就把手表忘在那儿了。", promptSentence: "洗手间你找过了吗？上次你就（bǎ）手表忘在那儿了。" },
+      { id: "H31447-76", day: 6, answer: "便", fullSentence: "这家超市的水果又新鲜又便宜。", promptSentence: "这家超市的水果又新鲜又（pián）宜。" },
+      { id: "H31447-77", day: 6, answer: "块", fullSentence: "那 10000块钱你不用着急还，我现在用不上。", promptSentence: "那 10000（kuài）钱你不用着急还，我现在用不上。" },
+      { id: "H31447-78", day: 7, answer: "讲", fullSentence: "我记得小时候妈妈经常给我讲《七个小矮人》的故事。", promptSentence: "我记得小时候妈妈经常给我（jiǎng）《七个小矮人》的故事。" },
+      { id: "H31447-79", day: 7, answer: "只", fullSentence: "这只鸟真聪明，还会说再见呢！", promptSentence: "这只鸟真聪明，还会说再见呢！" },
+      { id: "H31447-80", day: 7, answer: "看", fullSentence: "那条新闻我昨天就在报纸上看见了。", promptSentence: "那条新闻我昨天就在报纸上（kàn）见了。" },
+      { id: "H31448-76", day: 7, answer: "安", fullSentence: "她比较安静，不怎么爱说话。", promptSentence: "她比较（ān）静，不怎么爱说话。" },
+      { id: "H31448-77", day: 7, answer: "近", fullSentence: "这里离世界公园很近，不用坐车，走路一刻钟就能到。", promptSentence: "这里离世界公园很（jìn），不用坐车，走路一刻钟就能到。" },
+      { id: "H31448-78", day: 7, answer: "放", fullSentence: "妈，你放心吧，我一定会好好照顾自己的。", promptSentence: "妈，你（fàng）心吧，我一定会好好照顾自己的。" },
+      { id: "H31448-79", day: 7, answer: "少", fullSentence: "朋友告诉我，中国南方冬天很少下雪。", promptSentence: "朋友告诉我，中国南方冬天很（shǎo）下雪。" },
+      { id: "H31448-80", day: 7, answer: "同", fullSentence: "希望他会同意跟我换房间。", promptSentence: "希望他会（tóng）意跟我换房间。" },
+      { id: "H31550-76", day: 7, answer: "站", fullSentence: "请个子高的同学站中间。", promptSentence: "请个子高的同学（zhàn）中间。" },
+      { id: "H31550-77", day: 7, answer: "米", fullSentence: "我已经吃饱了，不要米饭了。", promptSentence: "我已经吃饱了，不要（mǐ）饭了。" },
+      { id: "H31550-78", day: 7, answer: "雨", fullSentence: "我们家那儿，秋天大多是晴天，很少下雨。", promptSentence: "我们家那儿，秋天大多是晴天，很少下（yǔ）。" },
+      { id: "H31550-79", day: 7, answer: "开", fullSentence: "下午的读书会三点一刻开始，欢迎大家参加。", promptSentence: "下午的读书会三点一刻（kāi）始，欢迎大家参加。" },
+      { id: "H31550-80", day: 7, answer: "法", fullSentence: "我们只能到前面坐船过河，没有其他办法。", promptSentence: "我们只能到前面坐船过河，没有其他办（fǎ）。" },
+      { id: "H31553B-80", day: 7, answer: "不", fullSentence: "我非常了解我妹妹，她是不会同意的。", promptSentence: "我非常了解我妹妹，她是（bú）会同意的。" },
+      { id: "H31553D-80", day: 7, answer: "中", fullSentence: "这儿离黑板太近了，我想坐中间。", promptSentence: "这儿离黑板太近了，我想坐（zhōng）间。" },
+      { id: "HSK30000-76", day: 7, answer: "太", fullSentence: "今天的云很多，看不见太阳。", promptSentence: "今天的云很多，看不见（tài）阳。" },
+      { id: "HSK30000-77", day: 7, answer: "名", fullSentence: "那只熊猫叫什么名字？", promptSentence: "那只熊猫叫什么（míng）字？" },
+      { id: "HSK30000-78", day: 7, answer: "米", fullSentence: "你敢跑一万五千米吗？", promptSentence: "你敢跑一万五千（mǐ）吗？" },
+      { id: "HSK30000-79", day: 7, answer: "回", fullSentence: "我认为他回答得很好。", promptSentence: "我认为他（huí）答得很好。" },
+      { id: "HSK30000-80", day: 7, answer: "牛", fullSentence: "早饭是牛奶、面包和鸡蛋。", promptSentence: "早饭是（niú）奶、面包和鸡蛋。" }
+    ];
+
+    var currentDay = 1, currentIndex = 0, dayQuestions = [], correctCount = 0;
+
+    function startDay(day) {
+      currentDay = day;
+      currentIndex = 0;
+      correctCount = 0;
+      dayQuestions = questions.filter(function(q) { return q.day === day; });
+      document.getElementById('homeView').classList.add('hidden');
+      document.getElementById('scoreView').classList.add('hidden');
+      document.getElementById('practiceView').classList.remove('hidden');
+      document.getElementById('progressText').textContent = '1 / ' + dayQuestions.length;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      var q = dayQuestions[currentIndex];
+      document.getElementById('questionNumber').textContent = '第 ' + (currentIndex + 1) + ' 题';
+      document.getElementById('questionSentence').innerHTML = q.promptSentence;
+      document.getElementById('answerInput').value = '';
+      document.getElementById('answerInput').disabled = false;
+      document.getElementById('checkBtn').disabled = false;
+      document.getElementById('resultArea').innerHTML = '';
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('answerInput').focus();
+    }
+
+    function checkAnswer() {
+      var input = document.getElementById('answerInput').value.trim();
+      if (!input) return;
+      var q = dayQuestions[currentIndex];
+      var isCorrect = input === q.answer;
+      if (isCorrect) correctCount++;
+      document.getElementById('answerInput').disabled = true;
+      document.getElementById('checkBtn').disabled = true;
+      var resultArea = document.getElementById('resultArea');
+      if (isCorrect) {
+        resultArea.innerHTML = '<div class="result correct"><div class="result-title">正确！</div><div class="result-detail">' + q.fullSentence + '</div></div>';
+      } else {
+        resultArea.innerHTML = '<div class="result wrong"><div class="result-title">错误</div><div class="result-detail">正确答案：<span class="correct-answer">' + q.answer + '</span><br>完整句子：' + q.fullSentence + '</div></div>';
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+      document.getElementById('nextBtn').textContent = currentIndex < dayQuestions.length - 1 ? '下一题' : '查看成绩';
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex >= dayQuestions.length) {
+        showScore();
+      } else {
+        document.getElementById('progressText').textContent = (currentIndex + 1) + ' / ' + dayQuestions.length;
+        showQuestion();
+      }
+    }
+
+    function showScore() {
+      document.getElementById('practiceView').classList.add('hidden');
+      document.getElementById('scoreView').classList.remove('hidden');
+      var total = dayQuestions.length;
+      var percentage = Math.round((correctCount / total) * 100);
+      document.getElementById('scoreTitle').textContent = 'Day ' + currentDay + ' 练习完成！';
+      document.getElementById('scoreNumber').textContent = correctCount + '/' + total;
+      document.getElementById('scoreDetail').textContent = '正确率 ' + percentage + '%';
+    }
+
+    function restartDay() { startDay(currentDay); }
+    function goHome() {
+      document.getElementById('practiceView').classList.add('hidden');
+      document.getElementById('scoreView').classList.add('hidden');
+      document.getElementById('homeView').classList.remove('hidden');
+    }
+
+    document.querySelectorAll('.day-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() { startDay(parseInt(this.getAttribute('data-day'))); });
+    });
+    document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+    document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+    document.getElementById('backBtn').addEventListener('click', goHome);
+    document.getElementById('restartBtn').addEventListener('click', restartDay);
+    document.getElementById('homeBtn').addEventListener('click', goHome);
+    document.getElementById('answerInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && !document.getElementById('checkBtn').disabled) checkAnswer();
+    });
+  </script>
+</body>
+</html>
