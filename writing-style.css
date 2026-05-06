@@ -1,0 +1,92 @@
+/* HSK3 Writing Combined Practice Styles */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; color: #333; min-height: 100vh; }
+.container { max-width: 750px; margin: 0 auto; padding: 15px; }
+
+/* Header */
+.header { text-align: center; padding: 15px 0; }
+.header h1 { font-size: 22px; color: #2c3e50; margin-bottom: 6px; }
+.header p { color: #666; font-size: 13px; }
+
+/* Module Switch Buttons */
+.module-switch { display: flex; gap: 10px; margin-bottom: 15px; }
+.module-btn { flex: 1; padding: 12px; border: 2px solid #3498db; background: white; color: #3498db; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; }
+.module-btn.active { background: #3498db; color: white; }
+.module-btn:active { transform: scale(0.98); }
+
+/* Day Selection */
+.day-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+.day-btn { background: white; border: 2px solid #3498db; color: #3498db; padding: 12px 5px; font-size: 14px; font-weight: bold; border-radius: 10px; cursor: pointer; }
+.day-btn:active { background: #3498db; color: white; }
+.day-btn .count { display: block; font-size: 11px; font-weight: normal; margin-top: 2px; }
+
+/* Practice Header */
+.practice-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.back-btn { background: none; border: none; color: #3498db; font-size: 13px; cursor: pointer; padding: 5px; }
+.progress { color: #666; font-size: 12px; }
+
+/* Question Card */
+.question-card { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 12px; }
+.question-number { color: #3498db; font-size: 12px; font-weight: bold; margin-bottom: 8px; }
+.question-title { font-size: 14px; color: #2c3e50; margin-bottom: 10px; }
+.question-sentence { font-size: 17px; line-height: 1.5; color: #2c3e50; margin-bottom: 15px; }
+
+/* Part1 Word Buttons Area */
+.words-area { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; min-height: 45px; padding: 10px; background: #f8f9fa; border-radius: 8px; }
+.word-btn { padding: 7px 12px; background: #3498db; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer; }
+.word-btn:active { background: #2980b9; transform: scale(0.95); }
+
+/* Part1 Answer Area */
+.answer-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 45px; padding: 10px; background: #e8f4f8; border-radius: 8px; border: 2px dashed #3498db; margin-bottom: 12px; }
+.answer-word { padding: 7px 12px; background: #27ae60; color: white; border-radius: 5px; font-size: 14px; cursor: pointer; }
+.answer-word:active { background: #229954; }
+
+/* Input Area (Part2) */
+.input-area { display: flex; gap: 8px; margin-bottom: 10px; }
+.answer-input { flex: 1; padding: 10px; font-size: 16px; border: 2px solid #ddd; border-radius: 6px; text-align: center; }
+.answer-input:focus { border-color: #3498db; }
+
+/* Control Buttons */
+.control-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.ctrl-btn { padding: 10px 14px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; }
+.ctrl-btn.undo { background: #f39c12; color: white; }
+.ctrl-btn.clear { background: #e74c3c; color: white; }
+.ctrl-btn.check { background: #3498db; color: white; }
+.ctrl-btn.next { background: #27ae60; color: white; }
+.ctrl-btn:disabled { background: #ccc; }
+.ctrl-btn:active { transform: scale(0.97); }
+
+/* Result */
+.result { padding: 12px; border-radius: 8px; margin-top: 10px; }
+.result.correct { background: #d4edda; border: 1px solid #c3e6cb; }
+.result.wrong { background: #f8d7da; border: 1px solid #f5c6cb; }
+.result-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
+.result.correct .result-title { color: #155724; }
+.result.wrong .result-title { color: #721c24; }
+.result-detail { color: #666; font-size: 12px; line-height: 1.4; }
+.result .grammar { color: #e67e22; font-weight: bold; margin-top: 6px; font-size: 13px; }
+.correct-answer { font-weight: bold; color: #155724; }
+
+/* Score View */
+.score-card { background: white; border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.score-title { font-size: 18px; color: #2c3e50; margin-bottom: 12px; }
+.score-number { font-size: 45px; font-weight: bold; color: #3498db; margin-bottom: 6px; }
+.score-detail { color: #666; font-size: 13px; margin-bottom: 20px; }
+.restart-btn { padding: 12px 25px; background: #3498db; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; }
+.home-link { display: inline-block; margin-top: 12px; color: #3498db; text-decoration: none; font-size: 12px; }
+
+/* Hidden */
+.hidden { display: none !important; }
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .container { padding: 10px; }
+  .module-switch { gap: 8px; }
+  .module-btn { padding: 10px; font-size: 13px; }
+  .day-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .day-btn { padding: 10px 5px; font-size: 13px; }
+  .control-btns { flex-direction: column; }
+  .ctrl-btn { width: 100%; }
+  .question-card { padding: 12px; }
+}
